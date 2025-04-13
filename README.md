@@ -1,40 +1,53 @@
-# Pet Care Platform
+# PetCare Platform
 
-A modern web application for pet care products and services built with Next.js, TypeScript, and Tailwind CSS.
+A comprehensive platform for pet care products and services, built with Next.js and TypeScript.
 
 ## Features
 
-- 🐾 Product catalog with categories
-- 🔍 Advanced search and filtering
-- 🛒 Shopping cart functionality
-- 💻 Responsive design
-- 🚀 RESTful API endpoints
-- 🎨 Modern UI with Tailwind CSS
+- **Product Management**
+  - Browse and search products
+  - Filter by categories
+  - Sort by price and date
+  - Shopping cart functionality
+
+- **Services**
+  - Book veterinary appointments
+  - Pet grooming services
+  - Dog walking services
+  - Boarding services
+
+- **User Features**
+  - Shopping cart
+  - Service booking
+  - Appointment management
 
 ## Tech Stack
 
-- **Frontend:** Next.js 15.3.0, React, TypeScript
-- **Styling:** Tailwind CSS
-- **Database:** Prisma ORM
-- **API:** REST API with Next.js API routes
-- **State Management:** React Hooks
+- Next.js 15.3.0 with App Router
+- TypeScript
+- Prisma ORM
+- SQLite Database
+- Tailwind CSS
+- Hero Icons
 
 ## Getting Started
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/grohan97/Pet-Care-platform.git
+   git clone <repository-url>
+   cd pet-care-platform
    ```
 
 2. Install dependencies:
    ```bash
-   cd pet-care-platform
    npm install
    ```
 
-3. Set up environment variables:
-   - Copy `.env.example` to `.env`
-   - Update the database connection string
+3. Set up the database:
+   ```bash
+   npx prisma generate
+   npx prisma db push
+   ```
 
 4. Run the development server:
    ```bash
@@ -43,16 +56,21 @@ A modern web application for pet care products and services built with Next.js, 
 
 5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## API Endpoints
+## Project Structure
 
-- `GET /api/products` - List all products with filtering and sorting
-- `GET /api/products/[id]` - Get single product details
-- `GET /api/categories` - List all product categories
-- `GET /api/cart` - Get cart items
-- `POST /api/cart` - Add item to cart
-- `PATCH /api/cart/[id]` - Update cart item
-- `DELETE /api/cart/[id]` - Remove cart item
+- `/app` - Next.js app router pages and API routes
+- `/components` - Reusable React components
+- `/prisma` - Database schema and migrations
+- `/lib` - Utility functions and shared code
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License.

@@ -9,8 +9,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model User {
@@ -25,15 +25,16 @@ model User {
   reviews       Review[]
   cart          Cart?
   addresses     Address[]
+  pets          Pet[]
 }
 
 model Product {
   id            String         @id @default(cuid())
   name          String
   description   String
-  price         Decimal       @db.Decimal(10, 2)
-  stock         Int
-  images        String[]
+  price         Float
+  stockQuantity Int
+  imageUrl      String
   categoryId    String
   category      Category      @relation(fields: [categoryId], references: [id])
   createdAt     DateTime      @default(now())
@@ -58,7 +59,7 @@ model Order {
   userId        String
   user          User          @relation(fields: [userId], references: [id])
   status        OrderStatus   @default(PENDING)
-  total         Decimal       @db.Decimal(10, 2)
+  total         Float
   items         OrderItem[]
   addressId     String
   address       Address       @relation(fields: [addressId], references: [id])
@@ -75,7 +76,7 @@ model OrderItem {
   productId     String
   product       Product       @relation(fields: [productId], references: [id])
   quantity      Int
-  price         Decimal       @db.Decimal(10, 2)
+  price         Float
 }
 
 model Cart {
@@ -97,15 +98,17 @@ model CartItem {
 }
 
 model Review {
-  id            String         @id @default(cuid())
-  rating        Int
-  comment       String?
-  userId        String
-  user          User          @relation(fields: [userId], references: [id])
-  productId     String
-  product       Product       @relation(fields: [productId], references: [id])
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id                String          @id @default(cuid())
+  rating            Int
+  comment           String?
+  userId            String
+  user              User            @relation(fields: [userId], references: [id])
+  productId         String?
+  product           Product?        @relation(fields: [productId], references: [id])
+  serviceProviderId String?
+  serviceProvider   ServiceProvider? @relation(fields: [serviceProviderId], references: [id])
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
 }
 
 model Address {
@@ -119,6 +122,108 @@ model Address {
   country       String        @default("India")
   isDefault     Boolean       @default(false)
   orders        Order[]
+}
+
+model Pet {
+  id              String    @id @default(cuid())
+  name            String
+  type            String    // dog, cat, bird, etc.
+  breed           String?
+  dateOfBirth     DateTime?
+  weight          Float?
+  userId          String    // Reference to the owner
+  user            User      @relation(fields: [userId], references: [id])
+  vaccinations    Vaccination[]
+  healthRecords   HealthRecord[]
+  dietaryNotes    String?
+  groomingRecords GroomingRecord[]
+  appointments    Appointment[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model Vaccination {
+  id          String    @id @default(cuid())
+  petId       String
+  pet         Pet       @relation(fields: [petId], references: [id])
+  name        String
+  date        DateTime
+  nextDueDate DateTime?
+  veterinary  String
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model HealthRecord {
+  id          String    @id @default(cuid())
+  petId       String
+  pet         Pet       @relation(fields: [petId], references: [id])
+  type        String    // checkup, treatment, surgery, etc.
+  date        DateTime
+  description String
+  veterinary  String
+  diagnosis   String?
+  prescription String?
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model GroomingRecord {
+  id          String    @id @default(cuid())
+  petId       String
+  pet         Pet       @relation(fields: [petId], references: [id])
+  date        DateTime
+  serviceType String    // bath, haircut, nail trimming, etc.
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model ServiceProvider {
+  id          String    @id @default(cuid())
+  name        String
+  type        String    // veterinary, groomer, walker, boarder
+  description String
+  address     String
+  phone       String
+  email       String    @unique
+  services    Service[]
+  appointments Appointment[]
+  rating      Float?
+  reviews     Review[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Service {
+  id               String    @id @default(cuid())
+  name             String
+  description      String
+  price            Float
+  duration         Int       // in minutes
+  serviceProviderId String
+  serviceProvider  ServiceProvider @relation(fields: [serviceProviderId], references: [id])
+  type             String    // veterinary, grooming, boarding, walking
+  appointments     Appointment[]
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+model Appointment {
+  id               String    @id @default(cuid())
+  petId            String
+  pet              Pet       @relation(fields: [petId], references: [id])
+  serviceId        String
+  service          Service   @relation(fields: [serviceId], references: [id])
+  serviceProviderId String
+  serviceProvider  ServiceProvider @relation(fields: [serviceProviderId], references: [id])
+  date             DateTime
+  status           String    // scheduled, completed, cancelled
+  notes            String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 }
 
 enum Role {
@@ -136,7 +241,7 @@ enum OrderStatus {
 
 enum PaymentStatus {
   PENDING
-  COMPLETED
+  PAID
   FAILED
   REFUNDED
 }

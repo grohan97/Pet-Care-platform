@@ -9,8 +9,8 @@ interface Product {
   name: string;
   description: string;
   price: number;
-  stock: number;
-  images: string[];
+  stockQuantity: number;
+  imageUrl: string;
   category: {
     id: string;
     name: string;
@@ -20,7 +20,6 @@ interface Product {
 export default function ProductDetails() {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedImage, setSelectedImage] = useState(0);
   const params = useParams();
   const router = useRouter();
 
@@ -66,33 +65,14 @@ export default function ProductDetails() {
     <div className="bg-white">
       <div className="max-w-2xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:max-w-7xl lg:px-8">
         <div className="lg:grid lg:grid-cols-2 lg:gap-x-8 lg:items-start">
-          {/* Image gallery */}
+          {/* Image */}
           <div className="flex flex-col">
             <div className="w-full aspect-w-1 aspect-h-1 bg-gray-200 rounded-lg overflow-hidden">
               <img
-                src={product.images[selectedImage]}
+                src={product.imageUrl}
                 alt={product.name}
                 className="w-full h-full object-center object-cover"
               />
-            </div>
-            <div className="mt-4 grid grid-cols-4 gap-2">
-              {product.images.map((image, index) => (
-                <button
-                  key={index}
-                  onClick={() => setSelectedImage(index)}
-                  className={`aspect-w-1 aspect-h-1 rounded-lg overflow-hidden ${
-                    selectedImage === index
-                      ? 'ring-2 ring-indigo-500'
-                      : 'ring-1 ring-gray-200'
-                  }`}
-                >
-                  <img
-                    src={image}
-                    alt={`${product.name} ${index + 1}`}
-                    className="w-full h-full object-center object-cover"
-                  />
-                </button>
-              ))}
             </div>
           </div>
 
@@ -102,7 +82,7 @@ export default function ProductDetails() {
               {product.name}
             </h1>
             <div className="mt-3">
-              <p className="text-3xl text-gray-900">₹{product.price}</p>
+              <p className="text-3xl text-gray-900">${product.price.toFixed(2)}</p>
             </div>
             <div className="mt-3">
               <h2 className="sr-only">Product information</h2>
@@ -110,7 +90,7 @@ export default function ProductDetails() {
                 Category: {product.category.name}
               </p>
               <p className="mt-1 text-sm text-gray-600">
-                Stock: {product.stock} available
+                Stock: {product.stockQuantity} available
               </p>
             </div>
 
